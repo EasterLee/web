@@ -57,7 +57,6 @@ function constructURL(url, data){
 }
 
 const generatedContent = document.getElementById('post-generate');
-generatedContent.style.display = 'none';
 
 const qrcodeElement = document.getElementById('qrcode');
 const qrcode = new QRCode('qrcode')

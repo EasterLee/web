@@ -20,5 +20,8 @@
   "homepage": "https://github.com/EasterLee/web#readme",
   "dependencies": {
     "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
