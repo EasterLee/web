@@ -16,7 +16,12 @@
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				background: linear-gradient(135deg, #e8f4f8 0%, #dce8f0 50%, #cfe0ec 100%);
+				background: linear-gradient(
+					135deg,
+					#e8f4f8 0%,
+					#dce8f0 50%,
+					#cfe0ec 100%
+				);
 				font-family: "DM Sans", sans-serif;
 				padding: 2rem 1rem;
 			}
@@ -86,15 +91,24 @@
 					</select>
 				</div>
 
-				<button type="submit" class="btn btn-submit" id="button-submit">Generate →</button>
+				<button type="submit" class="btn btn-submit" id="button-submit">
+					Generate →
+				</button>
 			</form>
 			<div id="post-generate" class="mb-3 mt-3" style="display: none">
 				<p>Save the QRCode or bookmark the url below</p>
 				<div id="qrcode"></div>
-				<p><a id="yuu-url" class="text-break link-dark link-opacity-50-hover link-offset-2" href="" target="_blank"></a></p>
+				<p>
+					<a
+						id="yuu-url"
+						class="text-break link-dark link-opacity-50-hover link-offset-2"
+						href=""
+						target="_blank"
+					></a>
+				</p>
 			</div>
 		</div>
-		<script src="./js/options.js" type="module"></script>
-		<script src="./js/qrcode.js"></script>
+		<script src="/src/js/options.js" type="module"></script>
+		<script src="/src/js/qrcode.js"></script>
 	</body>
 </html>
