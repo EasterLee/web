@@ -1,102 +1,4 @@
-// // description: This example demonstrates how to use a Container to group and manipulate multiple sprites
-
-// import * as PIXI from "pixi.js";
-
-// // Create a new application
-// const app = new PIXI.Application();
-
-// // Initialize the application
-// await app.init({ background: "#1099bb", resizeTo: window });
-
-// // Append the application canvas to the document body
-// document.body.appendChild(app.canvas);
-
-// const texture = PIXI.Texture.from({
-// 	resource: new Uint8Array(4 * 5 * 5).fill(255),
-// 	width: 5,
-// 	height: 5,
-// });
-
-// const container = new PIXI.ParticleContainer({
-// 	dynamicProperties: {
-// 		position: false, // default
-// 		vertex: false,
-// 		rotation: false,
-// 		color: true,
-// 	},
-// });
-
-// var mouse: PIXI.Point;
-// app.stage.eventMode = "static";
-// app.stage.hitArea = app.screen;
-// app.stage.on("mousemove", (e: PIXI.FederatedPointerEvent) => {
-// 	//console.log(e);
-// 	mouse = e.global;
-// });
-
-// app.stage.addChild(container);
-
-// interface ParticleOptions extends PIXI.ParticleOptions {
-// 	vx?: number;
-// 	vy?: number;
-// 	life?: number;
-// }
-
-// interface IParticle extends PIXI.IParticle {
-// 	vx?: number;
-// 	vy?: number;
-// 	life?: number;
-// }
-
-// class Particle extends PIXI.Particle implements IParticle {
-// 	vx: number = 0;
-// 	vy: number = 0;
-// 	life: number = 5000;
-// 	constructor(
-// 		options: PIXI.Texture<PIXI.TextureSource<any>> | ParticleOptions,
-// 	) {
-// 		super(options);
-// 		if (options instanceof PIXI.Texture) return;
-// 		const { vx, vy, life } = options;
-// 		this.vx = vx ?? this.vx;
-// 		this.vy = vy ?? this.vy;
-// 		this.life = life ?? this.life;
-// 	}
-// }
-
-// app.ticker.add((ticker) => {
-// 	window.dt = ticker.deltaMS;
-// 	if (!mouse) return;
-// 	for (let i = 0; i < 100; i++) {
-// 		container.addParticle(
-// 			new Particle({
-// 				texture,
-// 				x: mouse.x + (Math.random() - 0.5) * 100,
-// 				y: mouse.y + (Math.random() - 0.5) * 100,
-// 				vx: (Math.random() - 0.5) * 1,
-// 				vy: (Math.random() - 0.5) * 1,
-// 			}),
-// 		);
-// 	}
-
-// 	for (let i = container.particleChildren.length - 1; i >= 0; i--) {
-// 		let p = container.particleChildren[i] as Particle;
-
-// 		p.life -= ticker.deltaMS;
-// 		if (p.life <= 0) {
-// 			container.removeParticleAt(i);
-// 			continue;
-// 		}
-
-// 		p.y += p.vy;
-// 		p.x += p.vx;
-// 		p.color = 0xff0000ff;
-// 		p.scaleX += (Math.random() - 0.5) * 0.1;
-// 		p.scaleY += (Math.random() - 0.5) * 0.1;
-// 	}
-// });
-
-// window.app = app;\
+import shaderSource from "./shader.wgsl?raw"; // Vite
 
 const canvas = document.querySelector("canvas") as HTMLCanvasElement;
 const context = canvas.getContext("webgpu") as GPUCanvasContext;
@@ -112,50 +14,18 @@ class MyGPU {
 	constructor() {}
 	async init() {
 		this.adapter = (await navigator.gpu?.requestAdapter()) as GPUAdapter;
-		this.device = (await this.adapter?.requestDevice()) as GPUDevice;
+		this.device = (await this.adapter?.requestDevice({
+			requiredFeatures: ["timestamp-query"],
+		})) as GPUDevice;
 		if (!this.device) {
 			throw new Error("need a browser that supports WebGPU");
 		}
-
-		this.setUpPipeline();
-		this.setUpRenderPassDescriptor();
 	}
 
 	setUpPipeline() {
 		const module = this.device.createShaderModule({
 			label: "our hardcoded red triangle shaders",
-			code: /* wgsl */ `
-
-			struct VertexOutput {
-				@builtin(position) pos: vec4f,
-				@location(0) uv: vec2f,
-			}
-      @vertex fn vs(
-        @builtin(vertex_index) vertexIndex : u32
-      ) -> VertexOutput {
-        let pos = array(
-          VertexOutput(vec4f(-0.5, -0.5, 0.0, 1.0), vec2f(0, 0)),  // bottom left
-          VertexOutput(vec4f(-0.5, 0.5, 0.0, 1.0), vec2f(0, 1)),  // top left
-          VertexOutput(vec4f(0.5, -0.5, 0.0, 1.0), vec2f(1, 0)),  // bottom right
-
-		  
-          VertexOutput(vec4f(0.5, 0.5, 0.0, 1.0), vec2f(1, 1)),  // top right
-          VertexOutput(vec4f(-0.5, 0.5, 0.0, 1.0), vec2f(0, 1)),  // top left
-          VertexOutput(vec4f(0.5, -0.5, 0.0, 1.0), vec2f(1, 0))  // bottom right
-        );
- 
-        return pos[vertexIndex];
-      }
- 
-      @fragment fn fs(out: VertexOutput) -> @location(0) vec4f {
-		let centered = out.uv * 2.0 - vec2f(1.0, 1.0);
-
-		if (dot(centered, centered) > 1) {
-			discard;
-		}
-        return vec4f(1.0, 0.0, 0.0, 1.0);
-      }
-    `,
+			code: shaderSource,
 		});
 
 		const pipeline = this.device.createRenderPipeline({
@@ -166,7 +36,11 @@ class MyGPU {
 			},
 			fragment: {
 				module,
-				targets: [{ format: presentationFormat }],
+				targets: [
+					{
+						format: presentationFormat,
+					},
+				],
 			},
 		});
 
@@ -186,6 +60,27 @@ class MyGPU {
 		};
 		this.renderPassDescriptor = renderPassDescriptor;
 	}
+	initBuffer() {
+		uiBuffer = myGPU.device.createBuffer({
+			label: `uiBuffer`,
+			size: uiBufferSize,
+			usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+		});
+		particleBuffer = myGPU.device.createBuffer({
+			label: `particleBuffer`,
+			size: particleBufferValue.byteLength,
+			usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+		});
+
+		bindGroup = myGPU.device.createBindGroup({
+			label: "bind group for objects",
+			layout: myGPU.pipeline.getBindGroupLayout(0),
+			entries: [
+				{ binding: 0, resource: uiBuffer },
+				{ binding: 1, resource: particleBuffer },
+			],
+		});
+	}
 
 	render() {
 		// Get the current texture from the canvas context and
@@ -198,37 +93,146 @@ class MyGPU {
 		const encoder = this.device.createCommandEncoder({ label: "our encoder" });
 
 		// make a render pass encoder to encode render specific commands
-		const pass = encoder.beginRenderPass(this.renderPassDescriptor);
+		const pass = timingHelper.beginRenderPass(
+			encoder,
+			this.renderPassDescriptor,
+		);
 		pass.setPipeline(this.pipeline);
-		pass.draw(6); // call our vertex shader 3 times
+
+		//myGPU.device.queue.writeBuffer(particleBuffer, 0, particleBufferValue);
+
+		pass.setBindGroup(0, bindGroup);
+
+		if (particleIndex) pass.draw(6, particleIndex);
+
 		pass.end();
 
 		const commandBuffer = encoder.finish();
 		this.device.queue.submit([commandBuffer]);
+
+		timingHelper.getResult().then((gpuTime) => {
+			gpuAverage.addSample(gpuTime / 1000);
+		});
 	}
 }
 
+class GPUCompute {
+	device: GPUDevice;
+	pipeline!: GPUComputePipeline;
+	constructor(device: GPUDevice) {
+		this.device = device;
+	}
+	initPipeline(shader: string) {
+		const module = this.device.createShaderModule({
+			label: "compute shader",
+			code: shader,
+		});
+		const pipeline = this.device.createComputePipeline({
+			label: "compute pipeline",
+			layout: "auto",
+			compute: {
+				module,
+			},
+		});
+		this.pipeline = pipeline;
+	}
+}
+
+/*
+
+Canvas
+
+*/
 function initCanvas(device: GPUDevice) {
 	function resizeCanvas() {
-		canvas.width = window.innerWidth;
-		canvas.height = window.innerHeight;
+		canvas.style.width = "100dvw";
+		canvas.style.height = "100dvh";
+		canvas.width = canvas.clientWidth * devicePixelRatio;
+		canvas.height = canvas.clientHeight * devicePixelRatio;
 		context.configure({
 			device,
 			format: presentationFormat,
 		});
-		myGPU.render();
+
+		uiBufferValue.set([canvas.width, canvas.height]);
+		myGPU.device.queue.writeBuffer(uiBuffer, 0, uiBufferValue);
+		const depthStencilTexture = myGPU.device.createTexture({
+			label: "depth stencil texture",
+			size: [canvas.width, canvas.height],
+			format: "depth24plus-stencil8",
+			usage: GPUTextureUsage.RENDER_ATTACHMENT,
+		});
+		if (myGPU.renderPassDescriptor?.depthStencilAttachment)
+			myGPU.renderPassDescriptor.depthStencilAttachment.view =
+				depthStencilTexture.createView();
+		// myGPU.render();
 	}
 	resizeCanvas();
 	window.addEventListener("resize", resizeCanvas);
 }
 
 const myGPU = new MyGPU();
+
+let uiBuffer: GPUBuffer;
+let uiBufferValue = new Float32Array(4);
+let uiBufferSize = 2 * 4 + 8; //width + length float + padding
+
+/*
+struct Particle {
+    color: vec4f,
+    pos: vec2f,
+    vel: vec2f,
+};
+*/
+let particleBuffer: GPUBuffer;
+let particleValueFloatCount = 4 + 2 + 2;
+let particleBufferSize = particleValueFloatCount * 4;
+let maxParticleCount = 100000;
+let particleBufferValue = new Float32Array(
+	(particleBufferSize / 4) * maxParticleCount,
+);
+
+let particleIndex = 10000;
+function addParticle(x: number, y: number) {
+	particleBufferValue.set(
+		[1, 1, 1, 1, x, y, 0, 0],
+		particleValueFloatCount * particleIndex,
+	);
+	myGPU.device.queue.writeBuffer(particleBuffer, 0, particleBufferValue);
+	particleIndex++;
+	window.pi = particleIndex;
+}
+
+import TimingHelper from "https://webgpufundamentals.org/webgpu/resources/js/timing-helper.js";
+import NonNegativeRollingAverage from "https://webgpufundamentals.org/webgpu/resources/js/non-negative-rolling-average.js";
+const gpuAverage = new NonNegativeRollingAverage();
+let timingHelper;
+
+// Mouse
+canvas.addEventListener("mousedown", (event) => {
+	for (let i = 0; i < 100; i++) addParticle(event.x, event.y);
+});
+
+let bindGroup: GPUBindGroup;
+
 async function main() {
 	await myGPU.init();
-
+	myGPU.setUpPipeline();
+	myGPU.initBuffer();
 	initCanvas(myGPU.device);
+	myGPU.setUpRenderPassDescriptor();
 
+	timingHelper = new TimingHelper(myGPU.device);
+
+	lastTime = performance.now();
+	requestAnimationFrame(animate);
+}
+
+let lastTime = 0;
+function animate() {
+	window.g = (gpuAverage.get() / 1000).toFixed(1);
 	myGPU.render();
+	requestAnimationFrame(animate);
 }
 
 main();
