@@ -116,28 +116,6 @@ class MyGPU {
 	}
 }
 
-class GPUCompute {
-	device: GPUDevice;
-	pipeline!: GPUComputePipeline;
-	constructor(device: GPUDevice) {
-		this.device = device;
-	}
-	initPipeline(shader: string) {
-		const module = this.device.createShaderModule({
-			label: "compute shader",
-			code: shader,
-		});
-		const pipeline = this.device.createComputePipeline({
-			label: "compute pipeline",
-			layout: "auto",
-			compute: {
-				module,
-			},
-		});
-		this.pipeline = pipeline;
-	}
-}
-
 /*
 
 Canvas
