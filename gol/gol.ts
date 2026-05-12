@@ -1,4 +1,10 @@
 import shaderSrc from "./gol.wgsl?raw";
+
+const SIZE = {
+	vec2: 8,
+	vec4: 16,
+};
+
 async function main() {
 	const adapter = await navigator.gpu.requestAdapter();
 	const device = (await adapter?.requestDevice({
@@ -41,8 +47,8 @@ async function main() {
 		],
 	};
 
-	let uiBufferValue = new Float32Array(2);
-	let uiBufferSize = 2 * 4 + 8; //width + length float + padding
+	let uiBufferValue = new Float32Array(5);
+	let uiBufferSize = SIZE.vec2 * 3; //resolution + mouse position + padding
 	const uiBuffer = device.createBuffer({
 		label: `uiBuffer`,
 		size: uiBufferSize,
@@ -51,20 +57,47 @@ async function main() {
 
 	{
 		function resizeCanvas() {
-			canvas.style.width = "100dvw";
-			canvas.style.height = "100dvh";
-			canvas.width = canvas.clientWidth * devicePixelRatio;
+			canvas.style.width = "100vw";
+			canvas.style.height = "100vh";
+			canvas.width = canvas.clientWidth * devicePixelRatio; 
 			canvas.height = canvas.clientHeight * devicePixelRatio;
 			context.configure({
 				device: device,
 				format: presentationFormat,
 			});
-
 			uiBufferValue.set([canvas.width, canvas.height]);
 			device.queue.writeBuffer(uiBuffer, 0, uiBufferValue);
 		}
 		resizeCanvas();
 		window.addEventListener("resize", resizeCanvas);
+
+		function mouseMoveCanvas(e: MouseEvent) {
+			const x = e.x;
+			const y = e.y;
+			uiBufferValue.set([x* devicePixelRatio, y* devicePixelRatio], 2);
+			device.queue.writeBuffer(uiBuffer, SIZE.vec2, uiBufferValue, 2, 2);
+			console.log("Mouse move canvas at: ", x, y);
+		}
+
+		function toggleMouseOverCanvas(value: boolean) {
+			uiBufferValue.set([value ? 1 : 0], 4);
+			console.log(uiBufferValue);
+			device.queue.writeBuffer(uiBuffer, SIZE.vec2 * 2, uiBufferValue, 4, 1);
+		}
+
+		function mouseOn() {
+			toggleMouseOverCanvas(true);
+			console.log("Mouse over canvas");
+		}
+
+		function mouseOff() {
+			toggleMouseOverCanvas(false);
+			console.log("Mouse out of canvas");
+		}
+
+		window.addEventListener("mousemove", mouseMoveCanvas);
+		window.addEventListener("mousedown", mouseOn);
+		window.addEventListener("mouseup", mouseOff);
 	}
 
 	const bindGroup = device.createBindGroup({
@@ -88,8 +121,8 @@ async function main() {
 		pass.end();
 
 		device.queue.submit([encoder.finish()]);
+		requestAnimationFrame(render);
 	}
-
-	render();
+	requestAnimationFrame(render);
 }
 await main();

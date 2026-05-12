@@ -1,5 +1,7 @@
 struct UI {
-    resolution: vec2f
+    resolution: vec2f,
+    mouse: vec2f,
+    mouseOver: f32,
 };
 struct VSOutput {
     @builtin(position) position: vec4f,
@@ -10,12 +12,13 @@ struct VSOutput {
 
 
 @group(0) @binding(0) var<uniform> ui: UI;
+
 @vertex fn vs(
     @builtin(vertex_index) vertexIndex: u32,
 ) -> VSOutput {
 
 	let scale = 500.0;
-	let pos = vec2f(0.0, 0.0);
+	let pos = ui.mouse;
 
 
     let verts = array(
@@ -28,7 +31,7 @@ struct VSOutput {
         vec2f(-1, 1), //left top
     );
 
-    let scaled = verts[vertexIndex] * 500.0;
+    let scaled = verts[vertexIndex] * 25.0;
     let offset = (scaled + pos)/ui.resolution; // 0 <-> 1
     let two = offset * 2; // 0 <-> 1 to 0 <-> 2 space
     let clipSpace = two - 1; // 0 <-> 2 to -1 <-> 1
@@ -38,11 +41,14 @@ struct VSOutput {
     var vsOut: VSOutput;
     vsOut.position = vec4f(flip, 0.0, 1.0);
     // vsOut.position = vec4f(verts[vertexIndex], 0.0, 1.0);
-    vsOut.color = vec4f(1.0, 1.0, 1.0, 1.0);
+    vsOut.color = vec4f(1.0, 1.0, 1.0, ui.mouseOver);
     vsOut.uv = verts[vertexIndex];
     return vsOut;
 }
 
 @fragment fn fs(vsOut: VSOutput) -> @location(0) vec4f {
-    return vec4f(1.0, 1.0, 1.0, 1.0);
+    if (vsOut.color.a > 0.0) {
+        return vsOut.color;
+    }
+    return vec4f(0.0, 0.0, 0.0, 1.0);
 }
