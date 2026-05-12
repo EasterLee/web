@@ -1,3 +1,4 @@
+import TypeSize from "./const";
 import computeShader from "./shaders/compute/compute_shader.wgsl?raw"; // Vite
 async function main() {
 	const adapter = (await navigator.gpu?.requestAdapter()) as GPUAdapter;
@@ -46,21 +47,41 @@ async function main() {
 		entries: [{ binding: 0, resource: buffer }],
 	});
 
+	const indirectBuffer = device.createBuffer({
+		size: 3 * 4,
+		usage: GPUBufferUsage.INDIRECT | GPUBufferUsage.COPY_DST,
+	})
+
 	function emit() {
 		const encoder = device.createCommandEncoder({
-			label: "compute builtin encoder",
+			label: "compute builtin encoder emit",
 		});
-		const pass = encoder.beginComputePass({ label: "compute builtin pass" });
+		const pass = encoder.beginComputePass({ label: "compute builtin pass emit" });
 
 		pass.setPipeline(pipeline);
 		pass.setBindGroup(0, bindGroup);
-		pass.dispatchWorkgroups(1000);
+		pass.dispatchWorkgroupsIndirect(indirectBuffer, 0);
+		pass.end();
+		encoder.copyBufferToBuffer(buffer, 0, readBuffer, 0);
+		const commandBuffer = encoder.finish();
+		device.queue.submit([commandBuffer]);
+	}
+	function operate() {
+		const encoder = device.createCommandEncoder({
+			label: "compute builtin encoder operate",
+		});
+		const pass = encoder.beginComputePass({ label: "compute builtin pass operate" });
+
+		pass.setPipeline(pipeline);
+		pass.setBindGroup(0, bindGroup);
+		pass.dispatchWorkgroupsIndirect(indirectBuffer, 0);
 		pass.end();
 
 		encoder.copyBufferToBuffer(buffer, 0, readBuffer, 0);
 		const commandBuffer = encoder.finish();
 		device.queue.submit([commandBuffer]);
 	}
+
 	// await readBuffer.mapAsync(GPUMapMode.READ);
 	// const result = new Float32Array(readBuffer.getMappedRange());
 	// console.log(result);
