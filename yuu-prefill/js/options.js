@@ -1,8 +1,9 @@
-const cities = await fetch("/src/data/cities.json").then((r) => r.json());
-const pathways = await fetch("/src/data/pathways.json").then((r) => r.json());
-const managers = await fetch("/src/data/managers.json").then((r) => r.json());
+const cities = await fetch("/data/cities.json").then((r) => r.json());
+const pathways = await fetch("/data/pathways.json").then((r) => r.json());
+const managers = await fetch("/data/managers.json").then((r) => r.json());
 const mainUrl = "https://yearup.tfaforms.net/f/in-person-attendance";
 const yuuEmail = "@my.yearupunited.org";
+import QRCode from "qrcodejs2-fix";
 
 const questions = {
 	name: "tfa_2",
