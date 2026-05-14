@@ -1,3 +1,4 @@
+import { dirname, resolve } from "node:path";
 import { defineConfig } from "vite";
 
 export default defineConfig({
@@ -5,10 +6,11 @@ export default defineConfig({
 	build: {
 		outDir: "dist", // output folder
 		emptyOutDir: true, // clear dist before each build
-		rollupOptions: {
+		rolldownOptions: {
 			input: {
-				main: "index.html",
-				about: "yuu-prefill/index.html",
+				main: resolve(import.meta.dirname, "index.html"),
+				"yuu-prefill": resolve(import.meta.dirname, "yuu-prefill/index.html"),
+				gol: resolve(import.meta.dirname, "gol/index.html"),
 			},
 		},
 	},

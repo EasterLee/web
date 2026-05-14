@@ -1,4 +1,3 @@
-import TypeSize from "./const";
 import computeShader from "./shaders/compute/compute_shader.wgsl?raw"; // Vite
 async function main() {
 	const adapter = (await navigator.gpu?.requestAdapter()) as GPUAdapter;
@@ -50,13 +49,15 @@ async function main() {
 	const indirectBuffer = device.createBuffer({
 		size: 3 * 4,
 		usage: GPUBufferUsage.INDIRECT | GPUBufferUsage.COPY_DST,
-	})
+	});
 
 	function emit() {
 		const encoder = device.createCommandEncoder({
 			label: "compute builtin encoder emit",
 		});
-		const pass = encoder.beginComputePass({ label: "compute builtin pass emit" });
+		const pass = encoder.beginComputePass({
+			label: "compute builtin pass emit",
+		});
 
 		pass.setPipeline(pipeline);
 		pass.setBindGroup(0, bindGroup);
@@ -70,7 +71,9 @@ async function main() {
 		const encoder = device.createCommandEncoder({
 			label: "compute builtin encoder operate",
 		});
-		const pass = encoder.beginComputePass({ label: "compute builtin pass operate" });
+		const pass = encoder.beginComputePass({
+			label: "compute builtin pass operate",
+		});
 
 		pass.setPipeline(pipeline);
 		pass.setBindGroup(0, bindGroup);
