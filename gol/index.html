@@ -4,9 +4,46 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Document</title>
+		<style>
+			body {
+				overflow: hidden;
+				margin: 0;
+				padding: 0;
+			}
+			.config-button {
+				position: fixed;
+				z-index: 9999;
+				width: 30px;
+				height: 30px;
+				right: 0;
+				overflow: hidden;
+				transition: 0.5s;
+			}
+			.open {
+				width: 300px;
+				height: 300px;
+			}
+			canvas {
+				position: absolute;
+				z-index: 0;
+			}
+		</style>
 	</head>
-	<body style="overflow: hidden; margin: 0; padding: 0">
+	<body>
 		<canvas></canvas>
 		<script src="./gol.js" type="module"></script>
+		<button class="config-button">&#9776;</button>
+		<script>
+			let open = false;
+			let but = document.querySelector(".config-button");
+			but.addEventListener("click", () => {
+				if (open) {
+					but.classList.remove("open");
+				} else {
+					but.classList.add("open");
+				}
+				open = !open;
+			});
+		</script>
 	</body>
 </html>
