@@ -186,6 +186,20 @@
 				if (land2) land2.style.opacity = 1;
 				if (land3) land3.style.opacity = 1;
 				if (cove) cove.style.opacity = 1;
+				document.body.style.visibility = "visible";
+
+				let x = 0;
+				function typing() {
+					if (x >= hello.length) {
+						return;
+					}
+					//console.log(x);
+					x++;
+					msg.textContent = hello.substring(0, x);
+					setTimeout(typing, Math.random() * 300);
+				}
+
+				setTimeout(typing, 1000);
 			}
 		});
 	</script>
