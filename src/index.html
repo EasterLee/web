@@ -178,5 +178,15 @@
 				window.location.assign(loc);
 			}, 1500);
 		}
+
+		window.addEventListener("pageshow", (e) => {
+			if (e.persisted) {
+				// page was restored from bfcache
+				if (land1) land1.style.opacity = 1;
+				if (land2) land2.style.opacity = 1;
+				if (land3) land3.style.opacity = 1;
+				if (cove) cove.style.opacity = 1;
+			}
+		});
 	</script>
 </html>
