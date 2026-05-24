@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Connor's Comfy Cove</title>
+		<script type="module" src="./main.js"></script>
+		<style>
+			#land1,
+			#land2,
+			#land3 {
+				opacity: 0;
+				width: 100vw;
+				transform-origin: 50% 90%;
+				transform: scale(1.5);
+			}
+			#land1 {
+				transition: opacity 0.5s ease;
+			}
+			#land2 {
+				transition: opacity 1.5s ease;
+			}
+			#land3 {
+				transition: opacity 2.5s ease;
+			}
+			#cove {
+				opacity: 0;
+				transition: opacity 3.5s ease;
+			}
+		</style>
+	</head>
+	<body
+		class="d-flex flex-column vh-100 overflow-hidden corben-regular user-select-none"
+		style="visibility: hidden"
+	>
+		<nav class="navbar navbar-expand-sm">
+			<div class="container-fluid justify-content-start">
+				<a class="navbar-brand corben-bold fs-3 mx-3" href="#">conno.xyz</a>
+				<button
+					class="navbar-toggler ms-auto"
+					type="button"
+					data-bs-toggle="collapse"
+					data-bs-target="#navbarNavAltMarkup"
+					aria-controls="navbarNavAltMarkup"
+					aria-expanded="false"
+					aria-label="Toggle navigation"
+				>
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+					<div class="navbar-nav ms-3 corben-bold flex-grow-1">
+						<a class="nav-link active">Cove</a>
+						<a
+							class="nav-link"
+							href="./projects/"
+							onclick="
+								event.preventDefault();
+								exit(this.href);
+							"
+							>Projects</a
+						>
+					</div>
+					<a class="mx-3" href="https://github.com/EasterLee/"
+						><img src="/svg/github-white.svg" width="30" height="30"
+					/></a>
+				</div>
+			</div>
+		</nav>
+		<div
+			class="position-relative d-flex flex-grow-1 align-items-end overflow-hidden"
+		>
+			<canvas
+				class="position-absolute w-100 h-100"
+				style="
+					background-image: linear-gradient(
+						to bottom,
+						rgb(8, 8, 8) 33%,
+						rgb(32, 30, 43) 66%,
+						rgb(126, 113, 161)
+					);
+					z-index: -1;
+					position: fixed;
+				"
+			></canvas>
+			<div
+				id="cove"
+				class="position-absolute container w-auto text-center pt-3 px-5 shadow-lg top-50 start-50 translate-middle"
+				style="background-color: hsla(0, 0%, 100%, 0.13); border-radius: 50px"
+			>
+				<h1>
+					Connor's Cove
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						height="30px"
+						viewBox="0 -960 960 960"
+						width="30px"
+						fill="#FFFFFF"
+					>
+						<path
+							d="M80-80v-186l350-472-70-94 64-48 56 75 56-75 64 48-70 94 350 472v186H80Zm400-591L160-240v80h120l200-280 200 280h120v-80L480-671ZM378-160h204L480-302 378-160Zm102-280 200 280-200-280-200 280 200-280Z"
+						/>
+					</svg>
+				</h1>
+
+				<p id="message"></p>
+			</div>
+			<div class="position-absolute bottom-0 start-50 translate-middle-x">
+				<img id="land1" src="/svg/land1.svg" />
+			</div>
+			<div class="position-absolute bottom-0 start-50 translate-middle-x">
+				<img id="land2" src="/svg/land2.svg" />
+			</div>
+			<div class="position-absolute bottom-0 start-50 translate-middle-x">
+				<img id="land3" src="/svg/land3.svg" />
+			</div>
+		</div>
+	</body>
+	<script>
+		let land1 = document.querySelector("#land1");
+		let land2 = document.querySelector("#land2");
+		let land3 = document.querySelector("#land3");
+		let cove = document.querySelector("#cove");
+		let msg = document.querySelector("#message");
+		let hello = "Hello!!!";
+		let scale = 1.5;
+		window.addEventListener("mousemove", (e) => {
+			let x = (e.clientX / window.innerWidth) * 2 - 1;
+			let tx = 5 * x;
+			land1.style.transform = `translateX(${tx}%) scale(${scale})`;
+			tx *= 0.3;
+			land2.style.transform = `translateX(${tx}%) scale(${scale})`;
+			tx *= 0.3;
+			land3.style.transform = `translateX(${tx}%) scale(${scale})`;
+		});
+
+		document.addEventListener("DOMContentLoaded", () => {
+			document.body.style.visibility = "visible";
+			land1.style.opacity = 1;
+			land2.style.opacity = 1;
+			land3.style.opacity = 1;
+			cove.style.opacity = 1;
+			let x = 0;
+			function typing() {
+				if (x >= hello.length) {
+					return;
+				}
+				//console.log(x);
+				x++;
+				msg.textContent = hello.substring(0, x);
+				setTimeout(typing, Math.random() * 300);
+			}
+
+			setTimeout(typing, 1000);
+		});
+
+		function exit(loc) {
+			land1.style.opacity = 0;
+			land2.style.opacity = 0;
+			land3.style.opacity = 0;
+			cove.style.opacity = 0;
+			let bye = "bye...";
+			let x = 0;
+			function typing() {
+				if (x >= bye.length) {
+					return;
+				}
+				//console.log(x);
+				x++;
+				msg.textContent = bye.substring(0, x);
+				setTimeout(typing, Math.random() * 300);
+			}
+
+			typing();
+
+			setTimeout(() => {
+				window.location.assign(loc);
+			}, 1500);
+		}
+	</script>
+</html>

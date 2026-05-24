@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>YUU Attendance Prefilled</title>
+		<script type="module" src="/main.js"></script>
+	</head>
+	<body
+		class="d-flex flex-column vh-100 corben-regular user-select-none"
+		style="visibility: hidden"
+	>
+		<nav class="navbar navbar-expand-sm">
+			<div class="container-fluid justify-content-start">
+				<a class="navbar-brand corben-bold fs-3 mx-3" href="#">conno.xyz</a>
+				<button
+					class="navbar-toggler ms-auto"
+					type="button"
+					data-bs-toggle="collapse"
+					data-bs-target="#navbarNavAltMarkup"
+					aria-controls="navbarNavAltMarkup"
+					aria-expanded="false"
+					aria-label="Toggle navigation"
+				>
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+					<div class="navbar-nav ms-3 corben-bold flex-grow-1">
+						<a class="nav-link" href="/">Cove</a>
+						<a class="nav-link" href="/projects/">Projects</a>
+					</div>
+					<a class="mx-3" href="https://github.com/EasterLee/"
+						><img src="/svg/github-white.svg" width="30" height="30"
+					/></a>
+				</div>
+			</div>
+		</nav>
+		<div class="position-relative flex-grow-1">
+			<canvas
+				class="position-absolute w-100 h-100"
+				style="
+					background-image: linear-gradient(
+						to bottom,
+						rgb(8, 8, 8) 33%,
+						rgb(32, 30, 43) 66%,
+						rgb(126, 113, 161)
+					);
+					z-index: -1;
+					position: fixed;
+				"
+			></canvas>
+			<div class="container-fluid p-5 d-flex justify-content-center">
+				<div class="card p-4 bg-trans" style="max-width: 30rem">
+					<form id="the-form" autocomplete="off">
+						<!-- Name -->
+						<div class="mb-3">
+							<label for="name" class="form-label">Full Name</label>
+							<input type="text" class="form-control" id="name" name="name" />
+						</div>
+
+						<!-- Email -->
+						<div class="mb-3">
+							<label for="email" class="form-label">Email Address</label>
+							<div class="input-group">
+								<input
+									type="text"
+									class="form-control"
+									id="email"
+									name="email"
+								/>
+								<span class="input-group-text">@my.yearupunited.org</span>
+							</div>
+						</div>
+
+						<!-- City -->
+						<div class="mb-3">
+							<label for="city" class="form-label">City</label>
+							<select class="form-select" id="city" name="city">
+								<option value="" disabled selected>Select a city...</option>
+							</select>
+						</div>
+
+						<!-- Career Pathway -->
+						<div class="mb-3">
+							<label for="pathway" class="form-label">Career Pathway</label>
+							<select class="form-select" id="pathway" name="pathway">
+								<option value="" disabled selected>Select a pathway...</option>
+							</select>
+						</div>
+
+						<!-- Program Manager -->
+						<div class="mb-3">
+							<label for="pm" class="form-label">Program Manager</label>
+							<select class="form-select" id="pm" name="pm">
+								<option value="" disabled selected>Select a manager...</option>
+							</select>
+						</div>
+
+						<button type="submit" class="btn btn-secondary" id="button-submit">
+							Generate →
+						</button>
+					</form>
+					<div id="post-generate" class="mb-3 mt-3" style="display: none">
+						<p>Save the QRCode or bookmark the url below</p>
+						<div id="qrcode"></div>
+						<p class="mt-2">
+							<a
+								id="yuu-url"
+								class="text-break link-light link-opacity-50-hover link-offset-2"
+								href=""
+								target="_blank"
+							></a>
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="./js/options.js" type="module"></script>
+	</body>
+</html>

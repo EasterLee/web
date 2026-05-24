@@ -1,0 +1,27 @@
+// Import all of Bootstrap’s CSS
+@import "bootstrap/scss/bootstrap";
+
+@import url('https://fonts.googleapis.com/css2?family=Corben:wght@400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+
+.corben-regular {
+  font-family: "Corben", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.corben-bold {
+  font-family: "Corben", serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+* {
+  font-variant-ligatures: none;
+}
+img {
+  -webkit-user-drag: none;
+}
+
+.bg-trans {
+  background-color: hsla(0, 0%, 100%, 0.05);
+}
