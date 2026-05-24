@@ -1,5 +1,6 @@
 import { dirname, resolve } from "node:path";
 import { defineConfig } from "vite";
+import basicSsl from "@vitejs/plugin-basic-ssl";
 
 export default defineConfig({
 	root: resolve(import.meta.dirname, "src"), // tell Vite to look here for HTML files
@@ -31,4 +32,6 @@ export default defineConfig({
 			},
 		},
 	},
+	plugins: [basicSsl()],
+	server: { host: true },
 });
