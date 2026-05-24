@@ -13,6 +13,7 @@
 				width: 100vw;
 				transform-origin: 50% 90%;
 				transform: scale(1.5);
+				will-change: transform;
 			}
 			#land1 {
 				transition: opacity 0.5s ease;
@@ -119,11 +120,12 @@
 		let land1 = document.querySelector("#land1");
 		let land2 = document.querySelector("#land2");
 		let land3 = document.querySelector("#land3");
+
 		let cove = document.querySelector("#cove");
 		let msg = document.querySelector("#message");
 		let hello = "Hello!!!";
 		let scale = 1.5;
-		window.addEventListener("mousemove", (e) => {
+		window.addEventListener("pointermove", (e) => {
 			let x = (e.clientX / window.innerWidth) * 2 - 1;
 			let tx = 5 * x;
 			land1.style.transform = `translateX(${tx}%) scale(${scale})`;
@@ -154,10 +156,10 @@
 		});
 
 		function exit(loc) {
-			land1.style.opacity = 0;
-			land2.style.opacity = 0;
-			land3.style.opacity = 0;
-			cove.style.opacity = 0;
+			if (land1) land1.style.opacity = 0;
+			if (land2) land2.style.opacity = 0;
+			if (land3) land3.style.opacity = 0;
+			if (cove) cove.style.opacity = 0;
 			let bye = "bye...";
 			let x = 0;
 			function typing() {
