@@ -2,15 +2,32 @@ import { dirname, resolve } from "node:path";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-	root: ".", // tell Vite to look here for HTML files
+	root: resolve(import.meta.dirname, "src"), // tell Vite to look here for HTML files
 	build: {
-		outDir: "dist", // output folder
+		outDir: "../dist", // output folder
 		emptyOutDir: true, // clear dist before each build
 		rolldownOptions: {
 			input: {
-				main: resolve(import.meta.dirname, "index.html"),
-				"yuu-prefill": resolve(import.meta.dirname, "yuu-prefill/index.html"),
-				gol: resolve(import.meta.dirname, "gol/index.html"),
+				main: resolve(import.meta.dirname, "src/index.html"),
+				"yuu-prefill": resolve(
+					import.meta.dirname,
+					"src/yuu-prefill/index.html",
+				),
+				gol: resolve(import.meta.dirname, "src/gol/index.html"),
+				projects: resolve(import.meta.dirname, "src/projects/index.html"),
+			},
+		},
+	},
+	// Optional: Silence Sass deprecation warnings. See note below.
+	css: {
+		preprocessorOptions: {
+			scss: {
+				silenceDeprecations: [
+					"import",
+					"color-functions",
+					"global-builtin",
+					"if-function",
+				],
 			},
 		},
 	},
