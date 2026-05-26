@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Particle</title>
+		<script type="module" src="/main.js"></script>
+		<style></style>
+	</head>
+	<body
+		class="d-flex flex-column vh-100 overflow-hidden corben-regular user-select-none"
+		style="visibility: hidden"
+	>
+		<nav class="navbar navbar-expand-sm">
+			<div class="container-fluid justify-content-start">
+				<a class="navbar-brand corben-bold fs-3 mx-3" href="#">conno.xyz</a>
+				<button
+					class="navbar-toggler ms-auto"
+					type="button"
+					data-bs-toggle="collapse"
+					data-bs-target="#navbarNavAltMarkup"
+					aria-controls="navbarNavAltMarkup"
+					aria-expanded="false"
+					aria-label="Toggle navigation"
+				>
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+					<div class="navbar-nav ms-3 corben-bold flex-grow-1">
+						<a class="nav-link" href="/">Cove</a>
+						<a class="nav-link" href="/projects/">Projects</a>
+					</div>
+					<a class="mx-3" href="https://github.com/EasterLee/"
+						><img src="/svg/github-white.svg" width="30" height="30"
+					/></a>
+				</div>
+			</div>
+		</nav>
+		<div
+			class="position-relative d-flex flex-grow-1 align-items-end overflow-hidden"
+		>
+			<canvas
+				class="position-absolute w-100 h-100"
+				style="
+					background-image: linear-gradient(
+						to bottom,
+						rgb(8, 8, 8) 33%,
+						rgb(32, 30, 43) 66%,
+						rgb(126, 113, 161)
+					);
+					z-index: -1;
+					position: fixed;
+				"
+			></canvas>
+		</div>
+		<script src="./particle.ts" type="module"></script>
+	</body>
+</html>

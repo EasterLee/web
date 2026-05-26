@@ -16,6 +16,7 @@ export default defineConfig({
 				),
 				gol: resolve(import.meta.dirname, "src/gol/index.html"),
 				projects: resolve(import.meta.dirname, "src/projects/index.html"),
+				particle: resolve(import.meta.dirname, "src/particle/index.html"),
 			},
 		},
 	},

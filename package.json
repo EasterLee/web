@@ -13,7 +13,8 @@
     "@webgpu/types": "^0.1.69",
     "sass": "^1.100.0",
     "typescript": "~6.0.2",
-    "vite": "^8.0.10"
+    "vite": "^8.0.10",
+    "webgpu-utils": "^2.1.0"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
