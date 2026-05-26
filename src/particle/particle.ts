@@ -1,6 +1,7 @@
-import shaderSrc from "./simple_particle.wgsl?raw";
+import shaderSrc from "./wgsl/simple_particle.wgsl?raw";
+import commonSrc from "./wgsl/common.wgsl?raw";
 import { makeShaderDataDefinitions, makeStructuredView } from "webgpu-utils";
-const defs = makeShaderDataDefinitions(shaderSrc);
+const defs = makeShaderDataDefinitions(commonSrc + shaderSrc);
 console.log(defs);
 
 async function loadImageBitmap(url: string) {
@@ -37,7 +38,7 @@ async function main() {
 
 	const module = device.createShaderModule({
 		label: "shader module",
-		code: shaderSrc,
+		code: commonSrc + shaderSrc,
 	});
 
 	const renderPassDescriptor: GPURenderPassDescriptor = {
@@ -93,22 +94,41 @@ async function main() {
 				radius: f32,
 			};
 	*/
-	const singleParticleSize = 4 * 2 * 2 * 1;
-	const particleValue = new Float32Array(singleParticleSize * 10);
-	particleValue.set([1, 1, 1, 1, canvas.width / 2, canvas.height / 2]);
-	const particleBuffer = device.createBuffer({
-		label: "particleValue",
-		size: particleValue.byteLength,
-		usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+	const psDefs = defs.structs.ParticleSystem;
+	const psStruct = makeStructuredView(psDefs);
+	psStruct.set({
+		particles: [
+			{
+				color: [1, 1, 1, 1],
+				pos: [canvas.width / 2, canvas.height / 2],
+				vel: [0, 0],
+				radius: 1,
+			},
+			{
+				color: [1, 1, 1, 1],
+				pos: [canvas.width / 4, canvas.height / 4],
+				vel: [0, 0],
+				radius: 1,
+			},
+		],
+		drawParam: [6, 2],
 	});
-	device.queue.writeBuffer(particleBuffer, 4 * 4, particleValue, 4, 2);
+	const psBuffer = device.createBuffer({
+		label: "particleValue",
+		size: psStruct.arrayBuffer.byteLength,
+		usage:
+			GPUBufferUsage.STORAGE |
+			GPUBufferUsage.COPY_DST |
+			GPUBufferUsage.INDIRECT,
+	});
+	device.queue.writeBuffer(psBuffer, 0, psStruct.arrayBuffer);
 
 	const bindGroup0 = device.createBindGroup({
 		label: "Paint BindGroup",
 		layout: renderPipeline.getBindGroupLayout(0),
 		entries: [
 			{ binding: 0, resource: uiBuffer },
-			{ binding: 1, resource: particleBuffer },
+			{ binding: 1, resource: psBuffer },
 		],
 	});
 
@@ -158,7 +178,7 @@ async function main() {
 		renderPass.setBindGroup(0, bindGroup0);
 		renderPass.setBindGroup(1, bindGroup1);
 		//renderPass.setBindGroup(1, texBindGroupA);
-		renderPass.draw(6, 1);
+		renderPass.drawIndirect(psBuffer, psDefs.fields.drawParam.offset);
 		renderPass.end();
 
 		// encoder.copyTextureToTexture(
