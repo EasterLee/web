@@ -1,14 +1,3 @@
-struct StateStacks {
-    aliveRead: Stack,
-    aliveWrite: Stack,
-    dead: Stack,
-}
-
-struct Stack{
-	top_index: atomic<u32>,
-	arr: array<u32, MAX_Particle>,
-}
-
 struct VSOutput {
     @builtin(position) position: vec4f,
     @location(0) color: vec4f,

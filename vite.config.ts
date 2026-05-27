@@ -33,6 +33,6 @@ export default defineConfig({
 			},
 		},
 	},
-	plugins: [basicSsl()],
-	server: { host: true },
+	// plugins: [basicSsl()],
+	// server: { host: true },
 });

@@ -1,8 +1,16 @@
 import shaderSrc from "./wgsl/simple_particle.wgsl?raw";
 import commonSrc from "./wgsl/common.wgsl?raw";
-import { makeShaderDataDefinitions, makeStructuredView } from "webgpu-utils";
+import computeSrc from "./wgsl/compute.wgsl?raw";
+
+import {
+	makeShaderDataDefinitions,
+	makeStructuredView,
+	setVertexAndIndexBuffers,
+} from "webgpu-utils";
 const defs = makeShaderDataDefinitions(commonSrc + shaderSrc);
+const computeDefs = makeShaderDataDefinitions(commonSrc + computeSrc);
 console.log(defs);
+console.log(computeDefs);
 
 async function loadImageBitmap(url: string) {
 	const res = await fetch(url);
@@ -189,7 +197,68 @@ async function main() {
 
 		device.queue.submit([encoder.finish()]);
 	}
-	render();
+
+	/*
+
+		Compute
+
+	 */
+	const computeModule = device.createShaderModule({
+		label: "compute module",
+		code: commonSrc + computeSrc,
+	});
+	const computePipeline = device.createComputePipeline({
+		label: "Compute Pipeline Descriptor",
+		compute: {
+			module: computeModule,
+		},
+		layout: "auto",
+	});
+	const stateDefs = computeDefs.structs.StateStacks;
+	const stateStruct = makeStructuredView(stateDefs);
+	const stateBuffer = device.createBuffer({
+		label: "State Buffer",
+		size: stateStruct.arrayBuffer.byteLength,
+		usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+	});
+	const readDefs = computeDefs.structs.StorageRead;
+	const readStruct = makeStructuredView(readDefs);
+	const readBuffer = device.createBuffer({
+		label: "read Buffer",
+		size: readStruct.arrayBuffer.byteLength,
+		usage:
+			GPUBufferUsage.STORAGE |
+			GPUBufferUsage.COPY_DST |
+			GPUBufferUsage.INDIRECT,
+	});
+	const computeBindGroup0 = device.createBindGroup({
+		label: "Compute BindGroup",
+		layout: computePipeline.getBindGroupLayout(0),
+		entries: [
+			{ binding: 0, resource: uiBuffer },
+			{ binding: 1, resource: psBuffer },
+			{ binding: 2, resource: stateBuffer },
+			{ binding: 3, resource: readBuffer },
+		],
+	});
+
+	function compute() {
+		const encoder = device.createCommandEncoder({
+			label: "compute command encoder",
+		});
+		const computePass = encoder.beginComputePass({
+			label: "compute pass descript",
+		});
+		computePass.setPipeline(computePipeline);
+		computePass.setBindGroup(0, computeBindGroup0);
+		computePass.dispatchWorkgroupsIndirect(
+			readBuffer,
+			readDefs.fields.emissionCount.offset,
+		);
+		computePass.end();
+		device.queue.submit([encoder.finish()]);
+	}
+	compute();
 }
 
 await main();
